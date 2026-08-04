@@ -1,0 +1,2 @@
+import { Landing } from '@/components/landing';
+export default function Home(){return <><Landing/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({'@context':'https://schema.org','@type':['BeautySalon','LocalBusiness'],'name':'Beauty Mondial Academy','telephone':'+33695697778','description':'Espace de coworking beauté premium','url':'https://beautymondialacademy.com'})}}/></>}
