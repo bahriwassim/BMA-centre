@@ -15,3 +15,20 @@ create policy "public can request" on public.reservations for insert with check(
 -- Admin access: add the role in auth.users raw_app_meta_data: {"role":"admin"}
 create policy "admins manage rooms" on public.rooms for all using((auth.jwt()->'app_metadata'->>'role')='admin'); create policy "admins manage pricing" on public.pricing for all using((auth.jwt()->'app_metadata'->>'role')='admin'); create policy "admins manage reservations" on public.reservations for all using((auth.jwt()->'app_metadata'->>'role')='admin'); create policy "admins manage blocked" on public.blocked_dates for all using((auth.jwt()->'app_metadata'->>'role')='admin'); create policy "admins manage gallery" on public.gallery for all using((auth.jwt()->'app_metadata'->>'role')='admin'); create policy "admins manage equipment" on public.equipments for all using((auth.jwt()->'app_metadata'->>'role')='admin');
 insert into public.rooms(name,description,capacity) values ('Petite Salle','Salle intime entièrement équipée',2),('Grande Salle','Salle spacieuse et modulable',3) on conflict(name) do nothing;
+
+-- Demandes de devis (ne bloquent pas le calendrier)
+create table if not exists public.quote_requests (
+  id uuid primary key default uuid_generate_v4(),
+  first_name text not null,
+  last_name text not null,
+  email text not null,
+  phone text not null,
+  whatsapp text,
+  room_id uuid references public.rooms(id) on delete set null,
+  duration text not null,
+  notes text,
+  created_at timestamptz not null default now()
+);
+alter table public.quote_requests enable row level security;
+create policy "public can request quote" on public.quote_requests for insert with check (true);
+create policy "admins manage quotes" on public.quote_requests for all using ((auth.jwt()->'app_metadata'->>'role')='admin');

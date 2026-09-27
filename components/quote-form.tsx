@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Check, Loader2} from 'lucide-react';
@@ -7,6 +7,7 @@ import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {supabase} from '@/lib/supabase';
+import {WHATSAPP_URL} from '@/lib/site';
 
 const schema = z.object({
   first_name: z.string().min(2, 'Prénom requis'),
@@ -14,8 +15,8 @@ const schema = z.object({
   phone: z.string().min(6, 'Téléphone requis'),
   whatsapp: z.string().optional(),
   email: z.string().email('Email invalide'),
-  reservation_date: z.string().min(1, 'Date requise'),
   room_id: z.string().min(1, 'Choisissez une salle'),
+  duration: z.string().min(1, 'Choisissez une durée'),
   notes: z.string().optional(),
 });
 
@@ -35,7 +36,7 @@ const countryCodes = [
   '+971 — Émirats arabes unis',
 ];
 
-export function BookingForm({defaultRoomName}: {defaultRoomName?: string}) {
+export function QuoteForm({defaultRoomName}: {defaultRoomName?: string}) {
   const router = useRouter();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [busy, setBusy] = useState(false);
@@ -63,42 +64,34 @@ export function BookingForm({defaultRoomName}: {defaultRoomName?: string}) {
 
   const submit = async (values: Values) => {
     setBusy(true);
-    setError('reservation_date', {message: ''});
-    const client = supabase();
-    const selectedRooms = values.room_id === 'both' ? rooms : rooms.filter((room) => room.id === values.room_id);
-    if (!selectedRooms.length) {
-      setError('room_id', {message: 'Choisissez une salle.'});
-      setBusy(false);
-      return;
-    }
-    const {data: unavailable, error: availabilityError} = await client
-      .from('blocked_dates')
-      .select('room_id')
-      .in('room_id', selectedRooms.map((room) => room.id))
-      .eq('reservation_date', values.reservation_date);
-    if (availabilityError || unavailable?.length) {
-      setError('reservation_date', {message: 'Cette date est indisponible pour une des salles sélectionnées.'});
-      setBusy(false);
-      return;
-    }
-    const records = selectedRooms.map((room) => ({
-      ...values,
-      room_id: room.id,
-      phone: values.phone.startsWith('+') ? values.phone : `${countryCode} ${values.phone}`,
+    setError('notes', {message: ''});
+    const phone = values.phone.startsWith('+') ? values.phone : `${countryCode} ${values.phone}`;
+    const roomIds =
+      values.room_id === 'both' ? rooms.map((r) => r.id) : [values.room_id];
+
+    const records = roomIds.map((room_id) => ({
+      first_name: values.first_name,
+      last_name: values.last_name,
+      email: values.email,
+      phone,
+      whatsapp: values.whatsapp || null,
+      room_id,
+      duration: values.duration,
+      notes: values.notes || null,
     }));
-    const {error} = await client.from('reservations').insert(records);
+
+    const {error} = await supabase().from('quote_requests').insert(records);
     setBusy(false);
+
     if (error) {
-      setError('reservation_date', {
-        message:
-          error.code === '23505'
-            ? 'Une des salles est déjà réservée à cette date.'
-            : 'Impossible d’envoyer la demande. Réessayez.',
+      setError('notes', {
+        message: `Envoi impossible pour le moment. Contactez-nous sur WhatsApp : ${WHATSAPP_URL}`,
       });
       return;
     }
+
     setSent(true);
-    router.push('/merci-reservation');
+    router.push('/merci-devis');
   };
 
   if (sent) {
@@ -129,12 +122,12 @@ export function BookingForm({defaultRoomName}: {defaultRoomName?: string}) {
         Indicatif pays
         <input
           className="input mt-2"
-          list="country-codes"
+          list="quote-country-codes"
           value={countryCode}
           onChange={(e) => setCountryCode(e.target.value.split(' ')[0] || '+216')}
           placeholder="+216"
         />
-        <datalist id="country-codes">
+        <datalist id="quote-country-codes">
           {countryCodes.map((code) => (
             <option key={code} value={code} />
           ))}
@@ -163,16 +156,6 @@ export function BookingForm({defaultRoomName}: {defaultRoomName?: string}) {
         {err('email')}
       </label>
       <label>
-        Date
-        <input
-          {...register('reservation_date')}
-          type="date"
-          min={new Date().toISOString().split('T')[0]}
-          className="input mt-2"
-        />
-        {err('reservation_date')}
-      </label>
-      <label>
         Salle
         <select {...register('room_id')} className="input mt-2" defaultValue="">
           <option value="" disabled>
@@ -187,9 +170,27 @@ export function BookingForm({defaultRoomName}: {defaultRoomName?: string}) {
         </select>
         {err('room_id')}
       </label>
+      <label>
+        Durée souhaitée
+        <select {...register('duration')} className="input mt-2" defaultValue="">
+          <option value="" disabled>
+            Choisir une durée
+          </option>
+          <option value="Journée">Journée</option>
+          <option value="Semaine">Semaine</option>
+          <option value="Mois">Mois</option>
+          <option value="Longue durée">Longue durée / sur mesure</option>
+        </select>
+        {err('duration')}
+      </label>
       <label className="sm:col-span-2">
-        Commentaires
-        <textarea {...register('notes')} className="input mt-2 min-h-24" placeholder="Parlez-nous de votre besoin…" />
+        Votre projet
+        <textarea
+          {...register('notes')}
+          className="input mt-2 min-h-24"
+          placeholder="Décrivez votre formation, le nombre de participantes, les dates envisagées…"
+        />
+        {err('notes')}
       </label>
       <button disabled={busy} className="btn-gold mt-3 disabled:opacity-60 sm:col-span-2" type="submit">
         {busy ? (
@@ -197,7 +198,7 @@ export function BookingForm({defaultRoomName}: {defaultRoomName?: string}) {
             <Loader2 className="animate-spin" size={16} /> Envoi en cours
           </>
         ) : (
-          'Envoyer ma demande'
+          'Demander mon devis'
         )}
       </button>
     </form>
