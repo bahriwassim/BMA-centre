@@ -1,5 +1,5 @@
-export const WHATSAPP_URL = 'https://wa.me/330695697778';
-export const WHATSAPP_DISPLAY = '+33 06 95 69 77 78';
+export const WHATSAPP_URL = 'https://wa.me/33744719602';
+export const WHATSAPP_DISPLAY = '+33744719602';
 export const PHONE_TN = '+21658168903';
 export const SCHOOL_URL = 'https://beautymondialacademy.com/';
 

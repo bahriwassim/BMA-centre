@@ -144,10 +144,7 @@ export function Landing() {
           className="object-cover opacity-45"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#111_10%,rgba(17,17,17,.48)_65%,#111),linear-gradient(0deg,#111,transparent_45%)]" />
-        <div className="relative mx-auto flex min-h-[610px] max-w-7xl flex-col justify-center">
-          <motion.p {...reveal} className="eyebrow mb-7 flex items-center gap-3">
-            <span className="h-px w-8 bg-gold" /> L&apos;adresse des formations beauté & bien-être
-          </motion.p>
+        <div className="relative mx-auto flex min-h-[610px] max-w-7xl flex-col justify-start pt-24 md:pt-20">
           <motion.h1
             {...reveal}
             transition={{duration: 0.8, delay: 0.1}}
@@ -240,7 +237,7 @@ export function Landing() {
         </div>
       </section>
 
-      <section id="equipements" className="section relative md:py-20">
+      <section id="equipements" className="section relative">
         <motion.div {...reveal} className="mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="eyebrow">02 — Tout est déjà là</p>
@@ -316,7 +313,7 @@ export function Landing() {
         </motion.p>
       </section>
 
-      <section className="relative border-y border-white/10 py-28">
+      <section className="relative border-y border-white/10 py-8">
         <div className="absolute inset-0 noise opacity-20" />
         <div className="section relative py-0 text-center">
           <p className="eyebrow">Formez en toute sérénité</p>
