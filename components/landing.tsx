@@ -9,16 +9,13 @@ import {
   ChevronRight,
   Facebook,
   Instagram,
-  MessageCircle,
   Music2,
   Phone,
-  Pin,
   MapPin,
   X,
 } from 'lucide-react';
 import {useState} from 'react';
 import {BookingForm} from '@/components/booking-form';
-import {QuoteForm} from '@/components/quote-form';
 import {
   PHONE_TN,
   SCHOOL_URL,
@@ -58,10 +55,13 @@ const reveal = {
   transition: {duration: 0.7},
 };
 
+function PinterestIcon({size=17}: {size?: number}) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 0a12 12 0 0 0-4.37 23.18c-.1-.94-.19-2.39.04-3.42l1.4-5.94s-.36-.72-.36-1.78c0-1.67.97-2.91 2.18-2.91 1.03 0 1.52.77 1.52 1.69 0 1.03-.66 2.57-1 4-.28 1.2.6 2.18 1.78 2.18 2.14 0 3.79-2.26 3.79-5.52 0-2.89-2.08-4.91-5.05-4.91-3.44 0-5.46 2.58-5.46 5.25 0 1.04.4 2.16.9 2.77.1.12.11.23.08.35l-.34 1.36c-.06.22-.18.27-.41.16-1.51-.7-2.45-2.91-2.45-4.68 0-3.81 2.77-7.31 7.99-7.31 4.2 0 7.47 2.99 7.47 6.99 0 4.17-2.63 7.53-6.28 7.53-1.23 0-2.39-.64-2.79-1.4l-.76 2.9c-.27 1.06-1.01 2.38-1.5 3.19A12 12 0 1 0 12 0Z"/></svg> }
+function WhatsAppIcon({size=24}: {size?: number}) { return <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true"><path fill="#25D366" d="M16 .5A15.4 15.4 0 0 0 2.7 23.7L.6 31.4l7.9-2.1A15.5 15.5 0 1 0 16 .5Z"/><path fill="#fff" d="M23.4 18.8c-.4-.2-2.3-1.1-2.7-1.2-.4-.1-.6-.2-.9.2-.3.4-1 1.2-1.2 1.4-.2.3-.5.3-.9.1-.4-.2-1.6-.6-3.1-2-1.1-1-1.9-2.3-2.1-2.7-.2-.4 0-.6.2-.8l.6-.7c.2-.2.3-.4.4-.6.1-.3 0-.5 0-.7-.1-.2-.9-2.1-1.3-2.9-.3-.7-.6-.6-.9-.6h-.8c-.3 0-.7.1-1 .5-.4.4-1.3 1.3-1.3 3.2s1.4 3.7 1.6 4c.2.3 2.7 4.1 6.5 5.7.9.4 1.7.6 2.3.8 1 .3 1.8.2 2.5.1.8-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5Z"/></svg> }
+
 const socialIcons = {
   Instagram,
   Facebook,
-  Pinterest: Pin,
+  Pinterest: PinterestIcon,
   TikTok: Music2,
 } as const;
 
@@ -71,12 +71,14 @@ export function Landing() {
   const [selectedRoom, setSelectedRoom] = useState<SelectedRoom | null>(null);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [prefillRoom, setPrefillRoom] = useState<string | undefined>();
+  const [requestType, setRequestType] = useState<'reservation' | 'devis'>('reservation');
 
   const goToForm = (form: 'reservation' | 'devis', roomName: string) => {
     setPrefillRoom(roomName);
+    setRequestType(form);
     setSelectedRoom(null);
     requestAnimationFrame(() => {
-      document.getElementById(form)?.scrollIntoView({behavior: 'smooth', block: 'start'});
+      document.getElementById('reservation')?.scrollIntoView({behavior: 'smooth', block: 'start'});
     });
   };
 
@@ -133,7 +135,7 @@ export function Landing() {
         </div>
       </nav>
 
-      <section id="top" className="relative min-h-[800px] px-6 pt-32 md:px-12">
+      <section id="top" className="relative min-h-[800px] px-6 pt-32 md:min-h-[720px] md:px-12">
         <Image
           priority
           fill
@@ -142,28 +144,28 @@ export function Landing() {
           className="object-cover opacity-45"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#111_10%,rgba(17,17,17,.48)_65%,#111),linear-gradient(0deg,#111,transparent_45%)]" />
-        <div className="relative mx-auto flex min-h-[650px] max-w-7xl flex-col justify-center">
+        <div className="relative mx-auto flex min-h-[610px] max-w-7xl flex-col justify-center">
           <motion.p {...reveal} className="eyebrow mb-7 flex items-center gap-3">
             <span className="h-px w-8 bg-gold" /> L&apos;adresse des formations beauté & bien-être
           </motion.p>
           <motion.h1
             {...reveal}
             transition={{duration: 0.8, delay: 0.1}}
-            className="max-w-4xl text-5xl font-light leading-[.93] tracking-[-.055em] sm:text-7xl lg:text-8xl"
+            className="max-w-4xl text-5xl font-light leading-[.93] tracking-[-.055em] sm:text-7xl lg:text-[5.25rem]"
           >
             Salles de
             <br />
             <em className="font-serif text-gold">Formation.</em>
           </motion.h1>
-          <motion.p {...reveal} transition={{delay: 0.2}} className="mt-8 max-w-xl text-base leading-7 text-mist">
+          <motion.p {...reveal} transition={{delay: 0.2}} className="mt-6 max-w-xl text-base leading-7 text-mist">
             Organisez vos formations beauté à Sousse dans un espace professionnel entièrement équipé, disponible à la
             demande pour vos sessions et formations.
           </motion.p>
-          <motion.div {...reveal} transition={{delay: 0.3}} className="mt-10 flex flex-wrap gap-3">
+          <motion.div {...reveal} transition={{delay: 0.3}} className="mt-8 flex flex-wrap gap-3">
             <a className="btn-gold" href="#reservation">
               Réserver une salle <CalendarDays size={16} />
             </a>
-            <a className="btn-ghost" href="#devis">
+            <a className="btn-ghost" href="#reservation" onClick={() => setRequestType('devis')}>
               Demander un devis
             </a>
           </motion.div>
@@ -238,6 +240,67 @@ export function Landing() {
         </div>
       </section>
 
+      <section id="equipements" className="section relative md:py-20">
+        <motion.div {...reveal} className="mb-12 flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="eyebrow">02 — Tout est déjà là</p>
+            <h2 className="mt-4 text-4xl font-light md:text-6xl">
+              L&apos;équipement de vos <em className="text-gold">formations.</em>
+            </h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              aria-label="Équipement précédent"
+              onClick={() => {
+                const el = document.getElementById('equip-carousel');
+                if (el) el.scrollBy({left: -el.clientWidth * 0.85, behavior: 'smooth'});
+              }}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-cream transition hover:border-gold hover:text-gold"
+            >
+              <ChevronRight size={18} className="rotate-180" />
+            </button>
+            <button
+              aria-label="Équipement suivant"
+              onClick={() => {
+                const el = document.getElementById('equip-carousel');
+                if (el) el.scrollBy({left: el.clientWidth * 0.85, behavior: 'smooth'});
+              }}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold transition hover:bg-gold hover:text-ink"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </motion.div>
+        <div
+          id="equip-carousel"
+          className="carousel flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-5 pl-2 pr-2 md:pl-4 md:pr-4"
+        >
+          {equipment.map((x, i) => (
+            <motion.div
+              {...reveal}
+              transition={{delay: (i % 6) * 0.04}}
+              key={x}
+              className="carousel-item glass group relative w-[86%] snap-start shrink-0 overflow-hidden rounded-3xl border border-white/10 transition hover:border-gold/60 sm:w-[70%] md:w-[48%] lg:w-[32%] xl:w-[28%]"
+            >
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <Image
+                  src={`/gallery/${equipmentImages[x]}`}
+                  fill
+                  sizes="(max-width: 640px) 86vw, (max-width: 768px) 70vw, (max-width: 1024px) 48vw, 32vw"
+                  alt={x}
+                  className="object-cover opacity-80 transition duration-700 group-hover:scale-110 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-[#111]/25 to-transparent" />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
+                <span className="text-[10px] tracking-[.2em] text-gold">{String(i + 1).padStart(2, '0')}</span>
+                <h3 className="mt-2 text-xl font-normal leading-tight text-cream md:text-2xl">{x}</h3>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       <section id="concept" className="section grid gap-12 md:grid-cols-[.75fr_1.25fr] md:items-end">
         <motion.div {...reveal}>
           <p className="eyebrow">Concept BMA</p>
@@ -283,66 +346,6 @@ export function Landing() {
         </div>
       </section>
 
-      <section id="equipements" className="section relative">
-        <motion.div {...reveal} className="mb-12 flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <p className="eyebrow">02 — Tout est déjà là</p>
-            <h2 className="mt-4 text-4xl font-light md:text-6xl">
-              L&apos;équipement de vos <em className="text-gold">formations.</em>
-            </h2>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              aria-label="Équipement précédent"
-              onClick={() => {
-                const el = document.getElementById('equip-carousel');
-                if (el) el.scrollBy({left: -el.clientWidth * 0.85, behavior: 'smooth'});
-              }}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-cream transition hover:border-gold hover:text-gold"
-            >
-              <ChevronRight size={18} className="rotate-180" />
-            </button>
-            <button
-              aria-label="Équipement suivant"
-              onClick={() => {
-                const el = document.getElementById('equip-carousel');
-                if (el) el.scrollBy({left: el.clientWidth * 0.85, behavior: 'smooth'});
-              }}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold transition hover:bg-gold hover:text-ink"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </motion.div>
-        <div
-          id="equip-carousel"
-          className="carousel flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-5 pl-2 pr-2 md:pl-4 md:pr-4"
-        >
-          {equipment.map((x, i) => (
-            <motion.div
-              {...reveal}
-              transition={{delay: (i % 6) * 0.04}}
-              key={x}
-              className="carousel-item glass group relative snap-start shrink-0 overflow-hidden rounded-3xl border border-white/10 transition hover:border-gold/60 sm:w-[70%] md:w-[48%] lg:w-[32%] xl:w-[28%]"
-            >
-              <div className="relative aspect-[4/3] w-full overflow-hidden">
-                <Image
-                  src={`/gallery/${equipmentImages[x]}`}
-                  fill
-                  alt={x}
-                  className="object-cover opacity-80 transition duration-700 group-hover:scale-110 group-hover:opacity-100"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-[#111]/25 to-transparent" />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
-                <span className="text-[10px] tracking-[.2em] text-gold">{String(i + 1).padStart(2, '0')}</span>
-                <h3 className="mt-2 text-xl font-normal leading-tight text-cream md:text-2xl">{x}</h3>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       <section id="reservation" className="section">
         <div className="mx-auto max-w-4xl rounded-3xl border border-gold/25 bg-gradient-to-br from-[#201d14] to-[#161616] p-6 md:p-12">
           <p className="eyebrow">03 — Votre créneau</p>
@@ -350,18 +353,7 @@ export function Landing() {
             Réserver une <em className="text-gold">salle.</em>
           </h2>
           <p className="mt-4 text-mist">Les journées indisponibles ne peuvent pas être sélectionnées.</p>
-          <BookingForm key={`booking-${prefillRoom || 'any'}`} defaultRoomName={prefillRoom} />
-        </div>
-      </section>
-
-      <section id="devis" className="section pt-0">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-[#171717] p-6 md:p-12">
-          <p className="eyebrow">04 — Sur mesure</p>
-          <h2 className="mt-4 text-4xl font-light">
-            Demander un <em className="text-gold">devis.</em>
-          </h2>
-          <p className="mt-4 text-mist">Indiquez votre besoin — nous vous proposons une offre adaptée.</p>
-          <QuoteForm key={`quote-${prefillRoom || 'any'}`} defaultRoomName={prefillRoom} />
+          <BookingForm key={`${prefillRoom || 'any'}-${requestType}`} defaultRoomName={prefillRoom} defaultRequestType={requestType} />
         </div>
       </section>
 
@@ -376,13 +368,13 @@ export function Landing() {
               </h2>
               <div className="mt-8 space-y-4 text-mist">
                 <a href={WHATSAPP_URL} className="flex items-center gap-3 hover:text-gold">
-                  <MessageCircle size={17} className="text-gold" /> WhatsApp · {WHATSAPP_DISPLAY}
+                  <WhatsAppIcon size={17} /> WhatsApp · {WHATSAPP_DISPLAY}
                 </a>
                 <a href={`tel:${PHONE_TN}`} className="flex items-center gap-3 hover:text-gold">
                   <Phone size={17} className="text-gold" /> Téléphone Tunisie · +216 58 168 903
                 </a>
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Kantaoui%2C+Sousse%2C+Tunisie"
+                  href="https://maps.app.goo.gl/CRKrE6Cuo28iSxt3A"
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-3 hover:text-gold"
@@ -420,7 +412,7 @@ export function Landing() {
                 aria-label="Écrire sur WhatsApp"
                 className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-gold text-ink shadow-xl transition hover:scale-110"
               >
-                <MessageCircle size={22} />
+                <WhatsAppIcon size={22} />
               </a>
             </div>
           </div>
